@@ -1,0 +1,126 @@
+openapi: 3.0.0
+info:
+  title: Seat Selection API for a Movie Theater
+  version: 1.0.0
+  description: The API allows available seats in a movie theater (for a specific auditorium and showtime) to be viewed and selected. Seat selection may also be canceled.
+
+paths:
+  /seating:
+    get:
+      summary: Gather List of Available Seats
+      parameters:
+        - name: screening_id
+          in: query
+          description: The ID of the screening that available seats are desired from
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully found available seats (returns those seats)
+          content:
+            application/json:
+              schema:
+	  type: array
+	  items: 
+	    type: object
+	    properties:
+	      seat_number:
+	        type: string
+              example:
+                  - seat_number: "Z1"
+                  - seat_number: "Z2"
+        '400':
+          description: Invalid screening
+          content:
+            application/json:
+              example:
+                status: 'error'
+                message: 'Screening does not exist'
+        '404':
+          description: No seats available
+          content:
+            application/json:
+              example:
+                status: 'error'
+                message: 'There are no seats available for this screening'
+
+  /seating/choose:
+    post:
+      summary: Choose Seats
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                screening_id:
+                  type: integer
+                seating:
+                  type: array
+                  items:
+                    type: string
+                    description: The seat numbers that need to be chosen
+      responses:
+        '200':
+          description: Seats were chosen successfully and no longer available
+          content:
+            application/json:
+              example:
+                status: 'success'
+                message: 'Seats have been booked'
+        '404':
+          description: Booking failed due to invalid request
+          content:
+            application/json:
+              example:
+                status: 'error'
+                message: 'Unable to fulfill booking request for the seats'
+  
+  /seats/cancel:
+    delete:
+      summary: Cancel Seat Selection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                screening_id:
+                  type: integer
+                seating:
+                  type: array
+                  items:
+                    type: string
+                    description: The seat numbers that need to be canceled.
+      responses:
+        '200':
+          description: Seats were canceled successfully
+          content:
+            application/json:
+              example:
+                status: 'success'
+                message: 'Seats have been canceled'
+        '403':
+          description: Not enough permissions to cancel
+          content:
+            application/json:
+              example:
+                status: 'error'
+                message: 'Cancellation failed due to lack of permissions.'
+        '404':
+          description: Requested seats not found
+          content:
+            application/json:
+              example:
+                status: 'error'
+                message: 'The provided seats were not found.'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              example:
+                status: 'error'
+                message: 'An unexpected error on the server prevented cancellation'
