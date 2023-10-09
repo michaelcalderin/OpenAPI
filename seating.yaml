@@ -21,15 +21,15 @@ paths:
           content:
             application/json:
               schema:
-	  type: array
-	  items: 
-	    type: object
-	    properties:
-	      seat_number:
-	        type: string
+                type: array
+                items: 
+                  type: object
+                  properties:
+                    seat_number:
+                      type: string
               example:
-                  - seat_number: "Z1"
-                  - seat_number: "Z2"
+               - seat_number: "Z1"
+               - seat_number: "Z2"
         '400':
           description: Invalid screening
           content:
